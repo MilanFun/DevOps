@@ -61,13 +61,13 @@ public class UserRestController {
           schema = @Schema(implementation = User.class)) }),
       @ApiResponse(responseCode = "400", description = "Invalid id supplied", 
         content = @Content), 
-      @ApiResponse(responseCode = "404", description = "Book not found", 
+      @ApiResponse(responseCode = "404", description = "User not found", 
         content = @Content) })
     @RequestMapping(path = "/delete/{id}", method = RequestMethod.DELETE)
     @ResponseBody
     public ResponseEntity<String> deleteUser(@PathVariable int id) {
         this.userReposytory.deleteById(id);
-        return new ResponseEntity<String>("Employee deleted successfully!.", HttpStatus.OK);
+        return new ResponseEntity<String>("User deleted successfully!.", HttpStatus.OK);
     }
    
     @Operation(summary = "Get a user by its id")
