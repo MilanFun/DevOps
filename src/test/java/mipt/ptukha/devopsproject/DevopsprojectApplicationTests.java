@@ -15,6 +15,8 @@ import mipt.ptukha.devopsproject.entity.User;
 import mipt.ptukha.devopsproject.repository.UserRepository;
 
 import static org.hamcrest.CoreMatchers.is;
+
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.test.web.servlet.ResultMatcher;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
