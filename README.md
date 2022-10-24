@@ -38,3 +38,34 @@ Compile project:
 ```
 mvn clean install
 ```
+
+Systemd:\
+Add .service file to ``/etc/systemd/system/`` \
+Create new file, for example ``usermanager.service``\
+Put text below to file and change data in {} to your custom
+```
+[Unit]
+Description=DevOps project with Spring Boot and OpenAPI 3.0
+After=syslog.target
+
+[Service]
+User={user_name}
+ExecStart={path_where_store_jar_file}/devopsproject-1.0.jar
+SuccessExitStatus=143
+
+[Install]
+WantedBy=multi-user.target
+```
+Start: 
+```
+sudo systemctl enable {servicename}.service
+sudo systemctl start {servicename}.service
+```
+Check the status
+```
+sudo systemctl status {servicename}.service
+```
+
+Go to ``localhost:9090/`` and enjoy! 
+
+

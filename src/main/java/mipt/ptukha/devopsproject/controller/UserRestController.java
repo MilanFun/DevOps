@@ -5,6 +5,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import mipt.ptukha.devopsproject.entity.UserForm;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import mipt.ptukha.devopsproject.entity.User;
 import mipt.ptukha.devopsproject.repository.UserRepository;
@@ -12,11 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 
 /**
  *
@@ -26,7 +25,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping(path = "/user")
 public class UserRestController {
     @Autowired
-    private UserRepository userReposytory;
+    private UserRepository userRepository;
+    @Value("User manager application")
+    private String message;
+
+    @Value("Error")
+    private String errorMessage;
     
     @Operation(summary = "Get all user in database")
         @ApiResponses(value = { 
@@ -38,7 +42,7 @@ public class UserRestController {
     @RequestMapping(path = "/all", method = RequestMethod.GET)
     @ResponseBody
     public Iterable<User> getAllUsers() {
-        return this.userReposytory.findAll();
+        return this.userRepository.findAll();
     }
     
     @Operation(summary = "Add user by its first name, last name, email and age")
@@ -51,7 +55,7 @@ public class UserRestController {
     @RequestMapping(path = "/add", method=RequestMethod.POST)
     @ResponseBody
     public User addUser(@RequestBody User user) {
-        return this.userReposytory.save(user);
+        return this.userRepository.save(user);
     }
     
     @Operation(summary = "Delete user by its id")
@@ -66,7 +70,7 @@ public class UserRestController {
     @RequestMapping(path = "/delete/{id}", method = RequestMethod.DELETE)
     @ResponseBody
     public ResponseEntity<String> deleteUser(@PathVariable int id) {
-        this.userReposytory.deleteById(id);
+        this.userRepository.deleteById(id);
         return new ResponseEntity<String>("User deleted successfully!.", HttpStatus.OK);
     }
    
@@ -80,7 +84,52 @@ public class UserRestController {
     @RequestMapping(path = "/getuser/{id}", method = RequestMethod.GET)
     @ResponseBody
     public ResponseEntity<User> getUserById(@PathVariable int id) {
-        return this.userReposytory.findById(id).map(ResponseEntity::ok)
+        return this.userRepository.findById(id).map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
+
+    @RequestMapping(value = {"/", "/index"}, method = RequestMethod.GET)
+    public String index(Model model) {
+        model.addAttribute("welcomeMessage", this.message);
+        return "index";
+    }
+
+    @RequestMapping(value = "/userList", method = RequestMethod.GET)
+    public String userList(Model model) {
+        model.addAttribute("users", this.userRepository.findAll());
+        return "userList";
+    }
+
+    @RequestMapping(value = "/addUser", method = RequestMethod.GET)
+    public String addUser(Model model) {
+        UserForm user = new UserForm();
+        model.addAttribute("userForm", user);
+        return "addUser";
+    }
+
+    @RequestMapping(value = "/addUser", method = RequestMethod.POST)
+    public String addUser(Model model, @ModelAttribute("userForm") UserForm user) {
+        String firstName = user.getFirstName();
+        String lastName = user.getLastName();
+        String email = user.getEmail();
+        int age = user.getAge();
+
+        if(firstName != null && lastName != null && firstName.length() > 0 &&
+                lastName.length() > 0 && age > 0 && email.length() > 0) {
+            User newUser = new User();
+            newUser.setAge(age);
+            newUser.setFirstName(firstName);
+            newUser.setLastName(lastName);
+            newUser.setEmail(email);
+
+            this.userRepository.save(newUser);
+
+            return "redirect:/user/userList";
+        }
+
+        model.addAttribute("errorMessage", this.errorMessage);
+        return "redirect:/user/userList";
+    }
 }
+
+
