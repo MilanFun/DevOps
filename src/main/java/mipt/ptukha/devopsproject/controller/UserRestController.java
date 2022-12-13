@@ -93,13 +93,26 @@ public class UserRestController {
         model.addAttribute("welcomeMessage", this.message);
         return "index";
     }
-
+    @Operation(summary = "Get UI page with user list")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = User.class)) }),
+            @ApiResponse(responseCode = "400", description = "Error",
+                    content = @Content)})
     @RequestMapping(value = "/userList", method = RequestMethod.GET)
     public String userList(Model model) {
         model.addAttribute("users", this.userRepository.findAll());
         return "userList";
     }
 
+    @Operation(summary = "Add user via UI page")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Adding successful",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = User.class)) }),
+            @ApiResponse(responseCode = "400", description = "Error",
+                    content = @Content)})
     @RequestMapping(value = "/addUser", method = RequestMethod.GET)
     public String addUser(Model model) {
         UserForm user = new UserForm();
@@ -107,6 +120,13 @@ public class UserRestController {
         return "addUser";
     }
 
+    @Operation(summary = "POST via UI users")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Success",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = User.class)) }),
+            @ApiResponse(responseCode = "400", description = "Error",
+                    content = @Content)})
     @RequestMapping(value = "/addUser", method = RequestMethod.POST)
     public String addUser(Model model, @ModelAttribute("userForm") UserForm user) {
         String firstName = user.getFirstName();
@@ -124,11 +144,11 @@ public class UserRestController {
 
             this.userRepository.save(newUser);
 
-            return "redirect:/user/userList";
+            return "userList";
         }
 
         model.addAttribute("errorMessage", this.errorMessage);
-        return "redirect:/user/userList";
+        return "userList";
     }
 }
 

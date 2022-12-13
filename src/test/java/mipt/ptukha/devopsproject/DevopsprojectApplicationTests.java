@@ -28,18 +28,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class DevopsprojectApplicationTests {
         @Autowired
         private UserRepository userRepository;
-        
+
         @Autowired
         private MockMvc mockMvc;
-        
+
         @Autowired
         private ObjectMapper objectMapper;
-        
+
         @BeforeEach
         void setup(){
             this.userRepository.deleteAll();
         }
-        
+
         @Test
         public void givenUserObject_whenCreateUser_thenReturnSavedUser() throws Exception{
 
@@ -65,7 +65,7 @@ class DevopsprojectApplicationTests {
                     .andExpect(jsonPath("$.email",
                             is(user.getEmail())));
         }
-        
+
         // JUnit test for Get All employees REST API
         @Test
         public void givenListOfUsers_whenGetAllUsers_thenReturnUsersList() throws Exception{
@@ -76,7 +76,7 @@ class DevopsprojectApplicationTests {
             user1.setLastName("PtukhaTest1");
             user1.setEmail("test1@gamial.com");
             user1.setAge(100);
-            
+
             User user2 = new User();
             user2.setFirstName("AlexTest2");
             user2.setLastName("PtukhaTest2");
@@ -97,7 +97,7 @@ class DevopsprojectApplicationTests {
                             is(listOfEmployees.size())));
 
         }
-        
+
         // positive scenario - valid employee id
         // JUnit test for GET employee by id REST API
         @Test
@@ -120,7 +120,7 @@ class DevopsprojectApplicationTests {
                     .andExpect(jsonPath("$.lastName", is(user1.getLastName())))
                     .andExpect(jsonPath("$.email", is(user1.getEmail())));
         }
-        
+
         // negative scenario - valid employee id
         // JUnit test for GET employee by id REST API
         @Test
@@ -141,7 +141,7 @@ class DevopsprojectApplicationTests {
             response.andExpect(status().isNotFound())
                     .andDo(print());
         }
-        
+
         // JUnit test for delete employee REST API
         @Test
         public void givenUserId_whenDeleteEmployee_thenReturn200() throws Exception{
