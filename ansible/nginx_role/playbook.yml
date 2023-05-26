@@ -1,0 +1,5 @@
+---
+- hosts: linux
+  roles:
+    - { role: nginx, become: true, gather_facts: false}
+    

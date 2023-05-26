@@ -1,0 +1,63 @@
+default:
+  tags:
+    - tpos
+
+stages:
+  - compile
+  - test
+  - build
+
+compile 1/2:
+  stage: compile
+  image: registry.gitlab.atp-fivt.org/tpos2022/ptuhaal-hwci/centos
+  script:
+    - mvn clean compile -Dmaven.test.skip=true
+  rules:
+    - if: $CI_COMMIT_BRANCH == "dev"
+    - if: ($CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" || $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "staging")
+compile 2/2:
+  stage: compile
+  image: registry.gitlab.atp-fivt.org/tpos2022/ptuhaal-hwci/ubuntu
+  script:
+    - mvn clean compile -Dmaven.test.skip=true
+  rules:
+    - if: $CI_COMMIT_BRANCH == "dev"
+    - if: ($CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" || $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "staging")
+
+test 1/2:
+  stage: test
+  image: registry.gitlab.atp-fivt.org/tpos2022/ptuhaal-hwci/centos
+  script:
+    - mvn clean test
+  rules:
+    - if: $CI_COMMIT_BRANCH == "dev"
+    - if: ($CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" || $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "staging")
+test 2/2:
+  stage: test
+  image: registry.gitlab.atp-fivt.org/tpos2022/ptuhaal-hwci/ubuntu
+  script:
+    - mvn clean test
+  rules:
+    - if: $CI_COMMIT_BRANCH == "dev"
+    - if: ($CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" || $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "staging")
+
+build 1/2:
+  stage: build
+  image: registry.gitlab.atp-fivt.org/tpos2022/ptuhaal-hwci/centos
+  script:
+    - mvn clean install -Dmaven.test.skip=true
+  artifacts:
+    paths:
+      - target/*.jar 
+  rules:
+    - if: ($CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" || $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "staging")
+build 2/2:
+  stage: build
+  image: registry.gitlab.atp-fivt.org/tpos2022/ptuhaal-hwci/centos
+  script:
+    - mvn clean install -Dmaven.test.skip=true
+  rules:
+    - if: ($CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "main" || $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "staging")
+  artifacts:
+    paths:
+      - target/*.jar 

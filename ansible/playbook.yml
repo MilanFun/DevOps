@@ -1,0 +1,35 @@
+---
+- name: Test connection to my servers
+  hosts: all
+  become: yes
+
+  vars:
+    source_path: ./hello
+    dest_path: /home/vagrant/
+
+  tasks:
+
+  - name: Ping my servers
+    ping:
+
+  - name: Copy file
+    copy: src={{ source_path }} dest={{ dest_path }} mode=0777
+    notify: 
+      - Changed version of file
+      - Show changes
+
+
+  - set_fact: info="OS family --> {{ ansible_os_family }}, Pkg --> {{ ansible_pkg_mgr }}"
+
+  - name: Debug system
+    debug:
+      var: info
+
+  handlers:
+    - name: Changed version of file
+      shell: ./hello
+      register: results
+
+    - name: Show changes
+      debug:
+        var: results.stdout

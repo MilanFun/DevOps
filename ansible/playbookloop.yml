@@ -1,0 +1,25 @@
+---
+- name: Loop Example
+  hosts: node1
+  become: yes
+
+  tasks:
+
+  - name: Iterate in list
+    debug: msg="Hello, {{ item }}"
+    with_items:
+      - "World"
+      - "DevOps"
+      - "Ansible"
+      - "Vagrant"
+
+  - name: Iterate Until condition
+    shell: echo -n W >> file.txt && cat file.txt
+    register: output
+    delay: 2
+    retries: 10
+    until: output.stdout.find("WWWWW") == false
+
+  - name: Print file
+    debug: 
+      var: output.stdout
